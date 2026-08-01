@@ -1,0 +1,12 @@
+[build-system]
+requires = ["setuptools>=68", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "refrig-geotransformer"
+version = "0.1.0"
+description = "3D geometry-aware state-conditioned Transformer for refrigerant liquid thermal conductivity."
+requires-python = ">=3.9"
+
+[tool.setuptools.packages.find]
+where = ["src"]

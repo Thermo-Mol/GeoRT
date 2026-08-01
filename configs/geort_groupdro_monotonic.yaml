@@ -1,0 +1,83 @@
+seed: 2026
+
+data:
+  excel_path: data/thermal_conductivity_data.xlsx
+  mol_dir: data/mol
+  sheet_name: 0
+  refrigerant_col: name
+  temperature_col: T
+  pressure_col: p Mpa
+  target_col: NTC
+  critical_temperature_col: Tc
+  critical_pressure_col: Pc
+  condition_cols:
+    - T
+    - "p Mpa"
+    - Tc
+    - Pc
+    - Tr
+    - Pr
+
+  molecule_file_map:
+    R236fa: ER236FA.mol
+    R1234zeE: R1234zee.mol
+    R1366mzz(Z): R1366Z.mol
+    R1225ye(Z): R1225ye(z).mol
+
+split:
+  train_ratio: 0.70
+  val_ratio: 0.20
+  test_ratio: 0.10
+  forced_val_groups: []
+  forced_test_groups: []
+
+molecule:
+  max_atoms: 96
+  distance_cutoff_angstrom: 8.0
+  rbf_centers: 64
+  rbf_gamma: 10.0
+  add_hydrogens_if_missing: false
+  use_explicit_graph_descriptors: false
+
+model:
+  architecture: geometry_transformer
+  use_group_features: false
+  d_model: 256
+  n_layers: 8
+  n_heads: 8
+  dropout: 0.10
+  ffn_multiplier: 4
+  condition_dim: 128
+  descriptor_dim: 128
+  pooling: attentive
+  target_transform: log_standard
+
+loss:
+  kind: smooth_l1
+  smooth_l1_beta: 0.5
+  group_balanced: true
+  group_dro: true
+  group_dro_weight: 0.35
+
+monotonicity:
+  enabled: true
+  weight: 0.05
+  delta_standardized: 0.04
+  margin: 0.0
+
+auxiliary:
+  predict_critical_properties: false
+  critical_loss_weight: 0.0
+
+train:
+  output_dir: runs/geort_groupdro_monotonic
+  sampler: balanced_refrigerant
+  epochs: 700
+  batch_size: 128
+  learning_rate: 0.00025
+  weight_decay: 0.00001
+  warmup_epochs: 20
+  grad_clip_norm: 1.0
+  patience: 100
+  num_workers: 0
+  amp: true
